@@ -304,8 +304,8 @@ public class SpringApplication {
 	/**
 	 * 运行Spring application，创建并刷新{@link ApplicationContext}
 	 * 在不同的配置下会有不同的实现。
-	 * 在Servlet环境下@link ApplicationContext}其实现为{@link org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext}
-	 *
+	 * 在Servlet环境下@link ApplicationContext}其实现为
+	 * {@link org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext}
 	 *
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
@@ -334,12 +334,19 @@ public class SpringApplication {
 			//打印Spring Banner 自定义的话放置在resource目录下  命名未banner就可以
 			Banner printedBanner = printBanner(environment);
 
+			/**
+			 * 根据不同的环境创建不同的application context
+			 * 注意: 此处并未完全完成构建 仅仅调用了构造方法
+			 * 需要手动调用其中的{@link AbstractApplicationContext#refresh()}方法才能完成构建
+			 * {@link AbstractApplicationContext#refresh()}方法由{@link #refreshContext(ConfigurableApplicationContext)}调用
+			 */
 			context = createApplicationContext();
-			exceptionReporters = getSpringFactoriesInstances(
-					SpringBootExceptionReporter.class,
-					new Class[] { ConfigurableApplicationContext.class }, context);
-			prepareContext(context, environment, listeners, applicationArguments,
-					printedBanner);
+
+			//注册异常报告机制
+			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[] { ConfigurableApplicationContext.class }, context);
+
+			//准备环境
+			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
@@ -347,6 +354,8 @@ public class SpringApplication {
 				new StartupInfoLogger(this.mainApplicationClass)
 						.logStarted(getApplicationLog(), stopWatch);
 			}
+
+			//推送启动事件
 			listeners.started(context);
 			callRunners(context, applicationArguments);
 		}
@@ -399,13 +408,26 @@ public class SpringApplication {
 		}
 	}
 
-	private void prepareContext(ConfigurableApplicationContext context,
-			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
-			ApplicationArguments applicationArguments, Banner printedBanner) {
+	/**
+	 * 准备上下文
+	 * called by {@link #run(String...)}
+	 * @param context
+	 * @param environment
+	 * @param listeners
+	 * @param applicationArguments
+	 * @param printedBanner
+	 */
+	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment, SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
+		//设置关联
 		context.setEnvironment(environment);
+
 		postProcessApplicationContext(context);
+
 		applyInitializers(context);
+
+		//推送上下文准备完成事件  源代码尚未加载 指用户？
 		listeners.contextPrepared(context);
+
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
@@ -452,7 +474,8 @@ public class SpringApplication {
 
 	/**
 	 * 创建run()方法 监听器
-	 * 通过SrpingFactory获取实例
+	 * 通过SrpingFactory获取实例  进行事件推送
+	 * 默认实现为{@link org.springframework.boot.context.event.EventPublishingRunListener}
 	 * called by {@link #run(String...)}
 	 * @param args
 	 * @return
@@ -635,6 +658,9 @@ public class SpringApplication {
 	}
 
 	/**
+	 * 根据不同的策略创建合适的{@link ApplicationContext}。
+	 * 通过使用默认设置，此方法可以确保在任何情况下可以创建合适的application context。
+	 *
 	 * Strategy method used to create the {@link ApplicationContext}. By default this
 	 * method will respect any explicitly set application context or application context
 	 * class before falling back to a suitable default.
@@ -673,6 +699,8 @@ public class SpringApplication {
 	}
 
 	/**
+	 *
+	 * called By {@linkplain #prepareContext(ConfigurableApplicationContext, ConfigurableEnvironment, SpringApplicationRunListeners, ApplicationArguments, Banner)}
 	 * Apply any relevant post processing the {@link ApplicationContext}. Subclasses can
 	 * apply additional processing as required.
 	 * @param context the application context

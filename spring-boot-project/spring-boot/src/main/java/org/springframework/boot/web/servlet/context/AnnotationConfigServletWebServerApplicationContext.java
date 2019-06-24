@@ -65,6 +65,8 @@ public class AnnotationConfigServletWebServerApplicationContext
 	private String[] basePackages;
 
 	/**
+	 * 创建{@link AnnotationConfigServletWebServerApplicationContext}
+	 * 但是真正构造完成需要手动调用{@linkplain #refresh refreshed}。
 	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext} that needs
 	 * to be populated through {@link #register} calls and then manually
 	 * {@linkplain #refresh refreshed}.
