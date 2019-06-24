@@ -272,16 +272,18 @@ public class SpringApplication {
 		//判定类型
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		// 设置初始化方法
-		setInitializers((Collection) getSpringFactoriesInstances(
-				ApplicationContextInitializer.class));
+		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		// 获取事件（event）监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		//获取主函数入口
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
 
 	/**
 	 * 获取启动位置
+	 * 通过抛异常的方式来获取栈顶class
+	 * called by {@link SpringApplication#SpringApplication(ResourceLoader, Class[])}
 	 * @return
 	 */
 	private Class<?> deduceMainApplicationClass() {
