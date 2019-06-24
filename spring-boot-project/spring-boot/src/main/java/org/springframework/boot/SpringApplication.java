@@ -270,7 +270,7 @@ public class SpringApplication {
 		// 设置初始化方法
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
-		// 设置监听器
+		// 获取事件（event）监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -597,6 +597,12 @@ public class SpringApplication {
 			try {
 				switch (this.webApplicationType) {
 				case SERVLET:
+					/**
+					 * web 环境实现修改为
+					 * @see org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext
+					 * 1.5版本为 org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext
+					 * 2.1版本已经移除
+					 */
 					contextClass = Class.forName(DEFAULT_SERVLET_WEB_CONTEXT_CLASS);
 					break;
 				case REACTIVE:
