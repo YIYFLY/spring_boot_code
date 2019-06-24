@@ -250,6 +250,10 @@ public class SpringApplication {
 	}
 
 	/**
+	 *
+	 * 创建{@link SpringApplication}实例。
+	 * 这个实例将会从加载定义的资源。
+	 * 在{@link #run(String...)}方法运行前可自定义配置。
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
@@ -296,17 +300,26 @@ public class SpringApplication {
 	}
 
 	/**
+	 * 运行Spring application，创建并刷新{@link ApplicationContext}
+	 * 在不同的配置下会有不同的实现。
+	 * 在Servlet环境下@link ApplicationContext}其实现为{@link org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext}
+	 *
+	 *
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		//StopWatch用于监控任务是否运行记忆运行时长。
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
+
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+
 		configureHeadlessProperty();
+		//创建run()方法监听
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -414,23 +427,44 @@ public class SpringApplication {
 		}
 	}
 
+	/**
+	 * 是否启用Headless模式
+	 * Headless模式是在缺少显示屏、键盘或者鼠标是的系统配置。
+	 * called By
+	 * @see #run(String...)
+	 */
 	private void configureHeadlessProperty() {
 		System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, System.getProperty(
 				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(this.headless)));
 	}
 
+	/**
+	 * 创建run()方法 监听器
+	 * 通过SrpingFactory获取实例
+	 * called by {@link #run(String...)}
+	 * @param args
+	 * @return
+	 */
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
 		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
-		return new SpringApplicationRunListeners(logger, getSpringFactoriesInstances(
-				SpringApplicationRunListener.class, types, this, args));
+		return new SpringApplicationRunListeners(logger, getSpringFactoriesInstances(SpringApplicationRunListener.class, types, this, args));
 	}
 
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
 
+	/**
+	 * 通过SpringFactory获取实例
+	 * @param type
+	 * @param parameterTypes
+	 * @param args
+	 * @param <T>
+	 * @return
+	 */
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, Object... args) {
+		//获取类加载器
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
 		Set<String> names = new LinkedHashSet<>(
