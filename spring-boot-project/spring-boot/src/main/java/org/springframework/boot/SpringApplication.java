@@ -321,7 +321,7 @@ public class SpringApplication {
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 
 		configureHeadlessProperty();
-		//创建run()方法监听
+		//创建run()方法监听  提供启动过程中各种事件的监听
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -330,7 +330,10 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
+
+			//打印Spring Banner 自定义的话放置在resource目录下  命名未banner就可以
 			Banner printedBanner = printBanner(environment);
+
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,
@@ -362,6 +365,13 @@ public class SpringApplication {
 		return context;
 	}
 
+	/**
+	 * 字面意思为环境准备
+	 * called by {@link #run(String...)}
+	 * @param listeners
+	 * @param applicationArguments
+	 * @return
+	 */
 	private ConfigurableEnvironment prepareEnvironment(
 			SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments) {
@@ -469,10 +479,8 @@ public class SpringApplication {
 		//获取类加载器
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
-		Set<String> names = new LinkedHashSet<>(
-				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
-		List<T> instances = createSpringFactoriesInstances(type, parameterTypes,
-				classLoader, args, names);
+		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
 	}
@@ -499,6 +507,12 @@ public class SpringApplication {
 		return instances;
 	}
 
+	/**
+	 * 根据环境类型准备不同环境
+	 * 三个环境的构造方法均无任何操作
+	 * called by {@link #prepareEnvironment(SpringApplicationRunListeners, ApplicationArguments)}
+	 * @return
+	 */
 	private ConfigurableEnvironment getOrCreateEnvironment() {
 		if (this.environment != null) {
 			return this.environment;
