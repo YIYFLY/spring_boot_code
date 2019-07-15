@@ -82,8 +82,7 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 */
-	public AnnotationConfigServletWebServerApplicationContext(
-			DefaultListableBeanFactory beanFactory) {
+	public AnnotationConfigServletWebServerApplicationContext(DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);

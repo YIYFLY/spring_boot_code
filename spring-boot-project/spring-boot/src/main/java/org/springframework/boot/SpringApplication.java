@@ -325,10 +325,9 @@ public class SpringApplication {
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
-			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
-					args);
-			ConfigurableEnvironment environment = prepareEnvironment(listeners,
-					applicationArguments);
+			//创建环境变量
+			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 
 			//打印Spring Banner 自定义的话放置在resource目录下  命名未banner就可以
@@ -349,10 +348,11 @@ public class SpringApplication {
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
+
+			//停止计时
 			stopWatch.stop();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass)
-						.logStarted(getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
 
 			//推送启动事件
@@ -449,6 +449,11 @@ public class SpringApplication {
 		listeners.contextLoaded(context);
 	}
 
+
+	/**
+	 * refreshContext 发送对应事件 并且注册时间钩子
+	 * @param context
+	 */
 	private void refreshContext(ConfigurableApplicationContext context) {
 		refresh(context);
 		if (this.registerShutdownHook) {
@@ -481,6 +486,7 @@ public class SpringApplication {
 	 * @return
 	 */
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
+		//构造参数类型列表
 		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
 		return new SpringApplicationRunListeners(logger, getSpringFactoriesInstances(SpringApplicationRunListener.class, types, this, args));
 	}
@@ -491,9 +497,9 @@ public class SpringApplication {
 
 	/**
 	 * 通过SpringFactory获取实例
-	 * @param type
-	 * @param parameterTypes
-	 * @param args
+	 * @param type 				示例类型
+	 * @param parameterTypes	参数类型列表
+	 * @param args				启动参数
 	 * @param <T>
 	 * @return
 	 */
@@ -501,29 +507,43 @@ public class SpringApplication {
 		//获取类加载器
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
+		//获取需要实例化的对象
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		//创建实例
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
+		//对实例进行排序
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
 	}
 
+
+	/**
+	 * 创建实例
+	 * @param type				需要实例化的类型
+	 * @param parameterTypes	限定构造参数类型
+	 * @param classLoader 		类加载器
+	 * @param args				启动参数
+	 * @param names				需要实例化的实例名称
+	 * @param <T>				启动参数
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	private <T> List<T> createSpringFactoriesInstances(Class<T> type,
-			Class<?>[] parameterTypes, ClassLoader classLoader, Object[] args,
-			Set<String> names) {
+	private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, ClassLoader classLoader, Object[] args, Set<String> names) {
 		List<T> instances = new ArrayList<>(names.size());
 		for (String name : names) {
 			try {
+				//搜索Class对象
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
+				//判定是否可转型成为父类型
 				Assert.isAssignable(type, instanceClass);
-				Constructor<?> constructor = instanceClass
-						.getDeclaredConstructor(parameterTypes);
+				//获取指定参数列表的构造方法
+				Constructor<?> constructor = instanceClass.getDeclaredConstructor(parameterTypes);
+				//使用指定的构造方法初始化示例
 				T instance = (T) BeanUtils.instantiateClass(constructor, args);
 				instances.add(instance);
 			}
 			catch (Throwable ex) {
-				throw new IllegalArgumentException(
-						"Cannot instantiate " + type + " : " + name, ex);
+				throw new IllegalArgumentException("Cannot instantiate " + type + " : " + name, ex);
 			}
 		}
 		return instances;
@@ -570,6 +590,8 @@ public class SpringApplication {
 		}
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
+
+		
 	}
 
 	/**
@@ -775,6 +797,7 @@ public class SpringApplication {
 	}
 
 	/**
+	 * 获取日志
 	 * Returns the {@link Log} for the application. By default will be deduced.
 	 * @return the application log
 	 */

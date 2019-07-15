@@ -32,6 +32,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ErrorHandler;
 
 /**
+ * 为{@link SpringApplicationRunListener}的实现，用于推送事件
  * {@link SpringApplicationRunListener} to publish {@link SpringApplicationEvent}s.
  * <p>
  * Uses an internal {@link ApplicationEventMulticaster} for the events that are fired
@@ -102,8 +103,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	@Override
 	public void running(ConfigurableApplicationContext context) {
-		context.publishEvent(
-				new ApplicationReadyEvent(this.application, this.args, context));
+		context.publishEvent(new ApplicationReadyEvent(this.application, this.args, context));
 	}
 
 	@Override
