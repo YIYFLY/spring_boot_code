@@ -26,6 +26,7 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 转换服务
  * A specialization of {@link FormattingConversionService} configured by default with
  * converters and formatters appropriate for most Spring Boot applications.
  * <p>
@@ -53,6 +54,8 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
+	 * 获取转换服务
+	 * 此服务为懒加载，只有在需要时才会被创建
 	 * Return a shared default application {@code ConversionService} instance, lazily
 	 * building it once needed.
 	 * <p>
@@ -92,6 +95,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
+	 * 添加SpringBoot自带转换器
 	 * Add converters useful for most Spring Boot applications.
 	 * @param registry the registry of converters to add to (must also be castable to
 	 * ConversionService, e.g. being a {@link ConfigurableConversionService})

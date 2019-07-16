@@ -459,16 +459,14 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder profiles(String... profiles) {
 		this.additionalProfiles.addAll(Arrays.asList(profiles));
-		this.application.setAdditionalProfiles(
-				StringUtils.toStringArray(this.additionalProfiles));
+		this.application.setAdditionalProfiles(StringUtils.toStringArray(this.additionalProfiles));
 		return this;
 	}
 
 	private SpringApplicationBuilder additionalProfiles(
 			Collection<String> additionalProfiles) {
 		this.additionalProfiles = new LinkedHashSet<>(additionalProfiles);
-		this.application.setAdditionalProfiles(
-				StringUtils.toStringArray(this.additionalProfiles));
+		this.application.setAdditionalProfiles(StringUtils.toStringArray(this.additionalProfiles));
 		return this;
 	}
 
