@@ -44,6 +44,9 @@ class SpringApplicationBannerPrinter {
 
 	static final String[] IMAGE_EXTENSION = { "gif", "jpg", "png" };
 
+	/**
+	 * 默认Banner
+	 */
 	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
 
 	private final ResourceLoader resourceLoader;
@@ -72,7 +75,13 @@ class SpringApplicationBannerPrinter {
 		return new PrintedBanner(banner, sourceClass);
 	}
 
+	/**
+	 * 获取Banner
+	 * @param environment
+	 * @return
+	 */
 	private Banner getBanner(Environment environment) {
+		//检测是否存在用户自定义Banner
 		Banners banners = new Banners();
 		banners.addIfNotNull(getImageBanner(environment));
 		banners.addIfNotNull(getTextBanner(environment));
@@ -82,6 +91,7 @@ class SpringApplicationBannerPrinter {
 		if (this.fallbackBanner != null) {
 			return this.fallbackBanner;
 		}
+		//使用默认Banner
 		return DEFAULT_BANNER;
 	}
 

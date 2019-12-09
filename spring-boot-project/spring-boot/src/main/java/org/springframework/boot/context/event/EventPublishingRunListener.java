@@ -110,6 +110,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	public void failed(ConfigurableApplicationContext context, Throwable exception) {
 		ApplicationFailedEvent event = new ApplicationFailedEvent(this.application,
 				this.args, context, exception);
+		//如果Spring FrameWork Context已经激活，优先使用
 		if (context != null && context.isActive()) {
 			// Listeners have been registered to the application context so we should
 			// use it at this point if we can

@@ -321,7 +321,7 @@ public class SpringApplication {
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 
 		configureHeadlessProperty();
-		//创建run()方法监听  提供启动过程中各种事件的监听
+		//创建run()方法监听  提供启动过程中各种事件的监听 此listener接口是基于Spring Boot自身机制，不依赖与Spring FrameWork
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -397,6 +397,10 @@ public class SpringApplication {
 		return environment;
 	}
 
+	/**
+	 * 判断环境类型
+	 * @return
+	 */
 	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
 		switch (this.webApplicationType) {
 		case SERVLET:
@@ -480,7 +484,7 @@ public class SpringApplication {
 	/**
 	 * 创建run()方法 监听器
 	 * 通过SrpingFactory获取实例  进行事件推送
-	 * 默认实现为{@link org.springframework.boot.context.event.EventPublishingRunListener}
+	 * 配置文件默认实现为{@link org.springframework.boot.context.event.EventPublishingRunListener}
 	 * called by {@link #run(String...)}
 	 * @param args
 	 * @return
@@ -507,7 +511,7 @@ public class SpringApplication {
 		//获取类加载器
 		ClassLoader classLoader = getClassLoader();
 		// Use names and ensure unique to protect against duplicates
-		//获取需要实例化的对象
+		//获取需要实例化的对象 默认配置文件为META-INF/spring.factories文件
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		//创建实例
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
@@ -674,6 +678,7 @@ public class SpringApplication {
 	/**
 	 * 根据不同的策略创建合适的{@link ApplicationContext}。
 	 * 通过使用默认设置，此方法可以确保在任何情况下可以创建合适的application context。
+	 * 此处才开始构建Spring Framework Context
 	 *
 	 * Strategy method used to create the {@link ApplicationContext}. By default this
 	 * method will respect any explicitly set application context or application context
