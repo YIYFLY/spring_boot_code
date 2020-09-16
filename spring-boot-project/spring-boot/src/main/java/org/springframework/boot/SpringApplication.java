@@ -330,7 +330,7 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 
-			//打印Spring Banner 自定义的话放置在resource目录下  命名未banner就可以
+			//打印Spring Banner 自定义的话放置在resource目录下  命名为banner就可以
 			Banner printedBanner = printBanner(environment);
 
 			/**

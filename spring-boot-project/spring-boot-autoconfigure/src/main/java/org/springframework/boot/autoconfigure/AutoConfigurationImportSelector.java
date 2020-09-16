@@ -132,6 +132,11 @@ public class AutoConfigurationImportSelector
 		return AutoConfigurationGroup.class;
 	}
 
+	/**
+	 * 检查是否启用自动配置
+	 * @param metadata
+	 * @return
+	 */
 	protected boolean isEnabled(AnnotationMetadata metadata) {
 		if (getClass() == AutoConfigurationImportSelector.class) {
 			return getEnvironment().getProperty(
@@ -300,6 +305,11 @@ public class AutoConfigurationImportSelector
 		return Arrays.asList((value != null) ? value : new String[0]);
 	}
 
+	/**
+	 * 触发AutoConfigurationImportEvent事件
+	 * @param configurations
+	 * @param exclusions
+	 */
 	private void fireAutoConfigurationImportEvents(List<String> configurations,
 			Set<String> exclusions) {
 		List<AutoConfigurationImportListener> listeners = getAutoConfigurationImportListeners();
@@ -318,6 +328,10 @@ public class AutoConfigurationImportSelector
 				this.beanClassLoader);
 	}
 
+	/**
+	 * 函数回调
+	 * @param instance
+	 */
 	private void invokeAwareMethods(Object instance) {
 		if (instance instanceof Aware) {
 			if (instance instanceof BeanClassLoaderAware) {
