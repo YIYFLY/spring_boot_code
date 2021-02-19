@@ -43,7 +43,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Kazuki Shimizu
  */
 @Configuration
-@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
+@ConditionalOnClass({JdbcTemplate.class, PlatformTransactionManager.class})
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceTransactionManagerAutoConfiguration {
@@ -56,19 +56,15 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 		private final TransactionManagerCustomizers transactionManagerCustomizers;
 
-		DataSourceTransactionManagerConfiguration(DataSource dataSource,
-				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
+		DataSourceTransactionManagerConfiguration(DataSource dataSource, ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			this.dataSource = dataSource;
-			this.transactionManagerCustomizers = transactionManagerCustomizers
-					.getIfAvailable();
+			this.transactionManagerCustomizers = transactionManagerCustomizers.getIfAvailable();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(PlatformTransactionManager.class)
-		public DataSourceTransactionManager transactionManager(
-				DataSourceProperties properties) {
-			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(
-					this.dataSource);
+		public DataSourceTransactionManager transactionManager(DataSourceProperties properties) {
+			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(this.dataSource);
 			if (this.transactionManagerCustomizers != null) {
 				this.transactionManagerCustomizers.customize(transactionManager);
 			}

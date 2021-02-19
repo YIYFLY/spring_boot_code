@@ -42,6 +42,9 @@ class SpringApplicationRunListeners {
 		this.listeners = new ArrayList<>(listeners);
 	}
 
+	/**
+	 * 循环遍历获取监听器
+	 */
 	public void starting() {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.starting();
@@ -72,6 +75,10 @@ class SpringApplicationRunListeners {
 		}
 	}
 
+	/**
+	 * 发布应用上下文就绪事件：触发所有springapplicationRunnListener将挺起的running事件方法
+	 * @param context
+	 */
 	public void running(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.running(context);

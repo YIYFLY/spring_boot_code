@@ -146,6 +146,11 @@ class BeanDefinitionLoader {
 		throw new IllegalArgumentException("Invalid source type " + source.getClass());
 	}
 
+	/**
+	 * springboot会优先选择groovy加载方式，找不到在选择java方式
+	 * @param source
+	 * @return
+	 */
 	private int load(Class<?> source) {
 		if (isGroovyPresent()
 				&& GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
